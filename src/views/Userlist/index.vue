@@ -15,7 +15,11 @@
             v-model="input"
             class="input-with-select"
           >
-            <el-button slot="append" icon="el-icon-search"></el-button>
+            <el-button
+              slot="append"
+              icon="el-icon-search"
+              @click="onSearchId(input)"
+            ></el-button>
           </el-input>
           <el-button type="primary" @click="setUserForm = true"
             >添加用户</el-button
@@ -24,14 +28,11 @@
       </div>
       <!-- 表单 -->
       <el-table stripe :data="userList" border style="width: 100%">
-        <el-table-column type="index" label="#" width="50"> </el-table-column>
-        <el-table-column prop="username" label="姓名" width="230">
-        </el-table-column>
-        <el-table-column prop="mobile" label="电话" width="230">
-        </el-table-column>
-        <el-table-column prop="role_name" label="角色" width="230">
-        </el-table-column>
-        <el-table-column prop="mg_state" label="状态" width="230">
+        <el-table-column prop="id" label="#"> </el-table-column>
+        <el-table-column prop="username" label="姓名"> </el-table-column>
+        <el-table-column prop="mobile" label="电话"> </el-table-column>
+        <el-table-column prop="role_name" label="角色"> </el-table-column>
+        <el-table-column prop="mg_state" label="状态">
           <template v-slot="scope">
             <el-switch
               v-model="scope.row.mg_state"
@@ -53,12 +54,14 @@
               icon="el-icon-delete"
               size="small"
               class="del"
+              @click="delUserClick(scope.row.id)"
             ></el-button>
             <el-button
               type="primary"
               icon="el-icon-setting"
               size="small"
               class="set"
+              @click="settingNoun = !settingNoun"
             ></el-button>
           </template>
         </el-table-column>
@@ -116,7 +119,7 @@
       </div>
     </el-dialog>
 
-    <!-- 修改用户信息 -->
+    <!-- 修改用户信息弹出层 -->
     <el-dialog title="添加用户对话框" :visible.sync="putUserForm">
       <el-form :model="addUsers" :rules="rules">
         <el-form-item
@@ -144,14 +147,38 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="putUserForm = false">取 消</el-button>
-        <el-button type="primary" @click="putUserForm = false">确 定</el-button>
+        <el-button type="primary" @click="changeUserInfo(addUsers)"
+          >确 定</el-button
+        >
+      </div>
+    </el-dialog>
+
+    <!-- 设置角色弹出层 -->
+    <el-dialog title="分配角色" :visible.sync="settingNoun" width="50%" style="height:400px">
+      <el-form :model="form">
+        <el-form-item label="当前的用户:" :label-width="'100px'">
+          当前用户名
+        </el-form-item>
+         <el-form-item label="当前的角色:" :label-width="'100px'">
+          当前的角色
+        </el-form-item>
+        <el-form-item label="分配新角色" :label-width="'100px'">
+          <el-select v-model="form.region" placeholder="请选择活动区域">
+            <el-option label="区域一" value="shanghai"></el-option>
+            <el-option label="区域二" value="beijing"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="settingNoun = false">取 消</el-button>
+        <el-button type="primary" @click="settingNoun = false">确 定</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { getUserList, setUserList, putUserList } from '@/api/user'
+import { getUserList, setUserList, putUserList, searchUserInfo, changeUserInfo, delUserInfo } from '@/api/user'
 export default {
   name: 'Userlist',
   created () {
@@ -171,16 +198,6 @@ export default {
       // 弹窗内容
       setUserForm: false, // 添加弹出层关闭
       putUserForm: false, // 修改用户信息弹出层关闭
-      // form: {
-      //   name: '',
-      //   region: '',
-      //   date1: '',
-      //   date2: '',
-      //   delivery: false,
-      //   type: [],
-      //   resource: '',
-      //   desc: ''
-      // },
       formLabelWidth: '80px',
 
       // 校验
@@ -195,6 +212,28 @@ export default {
         ],
         password: [{ required: true, message: '密码不能为空', trigger: 'blur' }, { min: 3, max: 8, message: '密码长度3-8', trigger: 'blur' }
         ]
+      },
+      // 设置角色
+      gridData: [{
+        date: '2016-05-02',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1518 弄'
+      }, {
+        date: '2016-05-04',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1518 弄'
+      }],
+      dialogTableVisible: false,
+      settingNoun: true,
+      form: {
+        name: '',
+        region: '',
+        date1: '',
+        date2: '',
+        delivery: false,
+        type: [],
+        resource: '',
+        desc: ''
       }
 
     }
@@ -213,15 +252,15 @@ export default {
       this.getUserList()
       console.log(`当前页: ${val}`)
     },
-    // 获取用户列表
+    // 获取用户列表按钮
     async getUserList () {
-      console.log(1)
+      // console.log(1)
       try {
         const res = await getUserList(this.listObj)
-        console.log(123, res)
+        // console.log(123, res)
         this.userList = res.data.data.users
         this.total = res.data.data.total
-        console.log('get', this.userList)
+        // console.log('get', this.userList)
       } catch (error) {
         console.log(error)
       }
@@ -247,17 +286,74 @@ export default {
       // 关闭弹出框
       this.setUserForm = false
     },
-    // 修改用户信息
-    onPutClick (message) {
-      console.log('put', message)
+
+    // 修改用户信息按钮
+    async onPutClick (message) {
+      // console.log('put', message)
       this.putUserForm = !this.putUserForm
+      // 占用添加用户信息，修改以后需要清空
       this.addUsers = message
     },
+
+    // 确认修改用户信息按钮
+    async changeUserInfo (obj) {
+      // 关闭弹窗
+      this.putUserForm = false
+      // console.log('change', obj)
+      try {
+        const res = await changeUserInfo(obj)
+        console.log(111, res)
+      } catch (error) {
+        console.log(error)
+      }
+    },
+
     // 修改用户状态
     async putStateChange (id, state) {
       console.log('set', id, state)
       const res = await putUserList({ uId: id, type: state })
       console.log('putt', res)
+      this.$message({
+        message: '修改用户状态成功',
+        type: 'success'
+      })
+    },
+
+    // 根据id搜索用户信息
+    async onSearchId (id) {
+      try {
+        // console.log(111, id)
+        const res = await searchUserInfo(id)
+        // console.log(res)
+        // 重新渲染用户列表与总用户数量
+        this.userList = [res.data.data]
+        this.total = 1
+      } catch (error) {
+        console.log(error)
+      }
+      // this.getUserList()
+    },
+    // 删除用户信息
+    delUserClick (id) {
+      // console.log(111, id)
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        const res = await delUserInfo(id)
+        console.log('del', res)
+        this.getUserList()
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     }
   },
   computed: {},

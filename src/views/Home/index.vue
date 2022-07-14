@@ -26,13 +26,14 @@
           |&nbsp;&nbsp;|&nbsp;&nbsp;|
         </div>
 
-        <!-- 副本 -->
+        <!-- 侧边栏列表 -->
         <el-menu
+          :default-active="this.$route.path"
+          router
           :collapse-transition="false"
           background-color="#373d41"
           text-color="#fff"
           unique-opened
-          default-active="1-4-1"
           class="el-menu-vertical-demo"
           @open="handleOpen"
           @close="handleClose"
@@ -43,7 +44,7 @@
               <i class="el-icon-loading"></i>
               <span>俱乐部管理</span>
             </template>
-            <el-menu-item index="1-1" @click="onClick"
+            <el-menu-item index="/userlist"
               ><i class="el-icon-cpu"></i>俱乐部成员</el-menu-item
             >
           </el-submenu>
@@ -53,7 +54,7 @@
               <span>权限管理</span>
             </template>
             <!-- 角色管理列表 -->
-            <el-menu-item index="2-1" @click="onRoleClick"
+            <el-menu-item index="/permission"
               ><i class="el-icon-cpu"></i>角色列表</el-menu-item
             >
             <el-menu-item index="2-2"
@@ -85,16 +86,6 @@ export default {
     },
     handleClose (key, keyPath) {
       console.log(key, keyPath)
-    },
-    // 俱乐部成员跳转
-    onClick () {
-      this.$router.push('/home/userlist')
-      this.isShow = false
-    },
-    // 角色列表跳转
-    onRoleClick () {
-      this.$router.push('/home/permission')
-      this.isShow = false
     },
     goBack () {
       this.$store.commit('setUser', {})
@@ -172,5 +163,11 @@ export default {
 .row-bg {
   padding: 10px 0;
   background-color: #f9fafc;
+}
+/deep/ .el-dialog__body{
+padding: 0;
+.el-form-item{
+margin: 0;
+}
 }
 </style>

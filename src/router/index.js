@@ -8,12 +8,12 @@ const routes = [
   { path: '/login', component: () => import('@/views/Login') },
   {
     path: '/home',
-    redirect: '/home/permission',
+    // redirect: '/home/permission',
     component: () => import('@/views/Home'),
     children:
       [
-        { path: 'userlist', component: () => import('@/views/Userlist') },
-        { path: 'permission', component: () => import('@/views/Permission') }
+        { path: '/userlist', component: () => import('@/views/Userlist') },
+        { path: '/permission', component: () => import('@/views/Permission') }
       ]
   }
 ]
