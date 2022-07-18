@@ -60,7 +60,7 @@ export default {
           //  todo 把token存到vuex中，做持久化
           this.$store.commit('setUser', res.data.data)
           // 验证成功后跳转页面
-          this.$router.push('/home/permission')
+          this.$router.push('/home')
         } catch (error) {
           console.log(error)
         }

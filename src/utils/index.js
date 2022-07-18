@@ -1,12 +1,12 @@
 import axios from 'axios'
 import store from '@/store'
-const instance = axios.create({
+const request = axios.create({
   baseURL: 'http://liufusong.top:8899/api/private/v1/',
   timeout: 8000
 })
 
 // 添加请求拦截器
-instance.interceptors.request.use(function (config) {
+request.interceptors.request.use(function (config) {
   // 在发送请求之前做些什么
   if (store.state.user && store.state.user.token) {
     config.headers = {
@@ -20,7 +20,7 @@ instance.interceptors.request.use(function (config) {
 })
 
 // 添加响应拦截器
-instance.interceptors.response.use(function (response) {
+request.interceptors.response.use(function (response) {
   // 对响应数据做点什么
   return response
 }, function (error) {
@@ -28,4 +28,4 @@ instance.interceptors.response.use(function (response) {
   return Promise.reject(error)
 })
 
-export default instance
+export default request

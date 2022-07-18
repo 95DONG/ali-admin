@@ -13,7 +13,8 @@ const routes = [
     children:
       [
         { path: '/userlist', component: () => import('@/views/Userlist') },
-        { path: '/permission', component: () => import('@/views/Permission') }
+        { path: '/permission', component: () => import('@/views/Permission') },
+        { path: '/roles', component: () => import('@/views/Roles') }
       ]
   }
 ]

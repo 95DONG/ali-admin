@@ -54,10 +54,10 @@
               <span>权限管理</span>
             </template>
             <!-- 角色管理列表 -->
-            <el-menu-item index="/permission"
+            <el-menu-item index="/roles"
               ><i class="el-icon-cpu"></i>角色列表</el-menu-item
             >
-            <el-menu-item index="2-2"
+            <el-menu-item index="/permission"
               ><i class="el-icon-cpu"></i>权限列表</el-menu-item
             >
           </el-submenu>
@@ -71,8 +71,11 @@
 </template>
 
 <script>
+import { getPermissionList } from '@/api/permission'
 export default {
-  created () { },
+  created () {
+    this.getPermissionTree(0)
+  },
   data () {
     return {
       isSideWidth: true,
@@ -90,6 +93,11 @@ export default {
     goBack () {
       this.$store.commit('setUser', {})
       this.$router.push('/login')
+    },
+    // 获取树状列表
+    async getPermissionTree () {
+      const res = await getPermissionList('tree')
+      console.log('tree', res)
     }
   },
   computed: {},
@@ -164,10 +172,10 @@ export default {
   padding: 10px 0;
   background-color: #f9fafc;
 }
-/deep/ .el-dialog__body{
-padding: 0;
-.el-form-item{
-margin: 0;
-}
+/deep/ .el-dialog__body {
+  padding: 0;
+  .el-form-item {
+    margin: 0;
+  }
 }
 </style>

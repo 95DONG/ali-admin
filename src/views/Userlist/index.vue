@@ -2,7 +2,7 @@
   <div>
     <!-- 面包屑 -->
     <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item>活动管理</el-breadcrumb-item>
       <el-breadcrumb-item>活动列表</el-breadcrumb-item>
       <el-breadcrumb-item>活动详情</el-breadcrumb-item>
@@ -154,12 +154,17 @@
     </el-dialog>
 
     <!-- 设置角色弹出层 -->
-    <el-dialog title="分配角色" :visible.sync="settingNoun" width="50%" style="height:400px">
+    <el-dialog
+      title="分配角色"
+      :visible.sync="settingNoun"
+      width="50%"
+      style="height: 400px"
+    >
       <el-form :model="form">
         <el-form-item label="当前的用户:" :label-width="'100px'">
           当前用户名
         </el-form-item>
-         <el-form-item label="当前的角色:" :label-width="'100px'">
+        <el-form-item label="当前的角色:" :label-width="'100px'">
           当前的角色
         </el-form-item>
         <el-form-item label="分配新角色" :label-width="'100px'">
@@ -207,6 +212,7 @@ export default {
         email: '',
         mobile: ''
       },
+      row: {},
       rules: {
         username: [{ required: true, message: '用户名不能为空', trigger: 'blur' }, { min: 3, max: 8, message: '用户名长度3-8', trigger: 'blur' }
         ],
@@ -214,26 +220,11 @@ export default {
         ]
       },
       // 设置角色
-      gridData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }],
-      dialogTableVisible: false,
-      settingNoun: true,
-      form: {
-        name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: ''
+      gridData: [],
+      settingNoun: false, // 设置角色弹出显示
+      form: { // 设置角色弹出层下拉框
+        region: ''
+
       }
 
     }
@@ -289,20 +280,24 @@ export default {
 
     // 修改用户信息按钮
     async onPutClick (message) {
-      // console.log('put', message)
+      console.log('put', message)
       this.putUserForm = !this.putUserForm
       // 占用添加用户信息，修改以后需要清空
-      this.addUsers = message
+      this.addUsers.username = message.username
+      this.addUsers.email = message.email
+      this.addUsers.mobile = message.mobile
+      this.addUsers.id = message.id
     },
 
     // 确认修改用户信息按钮
-    async changeUserInfo (obj) {
+    async changeUserInfo () {
       // 关闭弹窗
       this.putUserForm = false
       // console.log('change', obj)
       try {
-        const res = await changeUserInfo(obj)
+        const res = await changeUserInfo(this.addUsers)
         console.log(111, res)
+        this.getUserList()
       } catch (error) {
         console.log(error)
       }
@@ -383,7 +378,6 @@ export default {
 
 .box-card {
   width: 100%;
-  height: 500px;
   margin-top: 20px;
 }
 .el-input {
@@ -401,6 +395,7 @@ export default {
   max-height: 30px;
 }
 .el-form-item {
+  padding: 10px 0 ;
   .el-input {
     width: 99%;
   }
