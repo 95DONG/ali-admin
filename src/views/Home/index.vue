@@ -61,6 +61,22 @@
               ><i class="el-icon-cpu"></i>权限列表</el-menu-item
             >
           </el-submenu>
+          <!-- 商品 -->
+          <el-submenu index="3">
+            <template slot="title">
+              <i class="el-icon-loading"></i>
+              <span>商品管理</span>
+            </template>
+            <el-menu-item index="/goodslist"
+              ><i class="el-icon-cpu"></i>商品列表</el-menu-item
+            >
+            <el-menu-item index="/classparameter"
+              ><i class="el-icon-cpu"></i>分类参数</el-menu-item
+            >
+            <el-menu-item index="/goodsclass"
+              ><i class="el-icon-cpu"></i>商品分类</el-menu-item
+            >
+          </el-submenu>
         </el-menu>
       </el-aside>
       <el-main>

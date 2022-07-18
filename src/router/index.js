@@ -8,13 +8,16 @@ const routes = [
   { path: '/login', component: () => import('@/views/Login') },
   {
     path: '/home',
-    // redirect: '/home/permission',
     component: () => import('@/views/Home'),
     children:
       [
         { path: '/userlist', component: () => import('@/views/Userlist') },
         { path: '/permission', component: () => import('@/views/Permission') },
-        { path: '/roles', component: () => import('@/views/Roles') }
+        { path: '/roles', component: () => import('@/views/Roles') },
+        { path: '/goodslist', component: () => import('@/views/Goods/goodsLists.vue') },
+        { path: '/goodslist/addgoods', component: () => import('@/views/Goods/addGoods/addGoods.vue') },
+        { path: '/goodsclass', component: () => import('@/views/Goods/goodsClass') },
+        { path: '/classparameter', component: () => import('@/views/Goods/classParameter.vue') }
       ]
   }
 ]
