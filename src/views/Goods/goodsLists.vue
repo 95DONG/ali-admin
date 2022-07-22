@@ -20,9 +20,7 @@
               icon="el-icon-search"
             ></el-button>
           </el-input>
-          <el-button type="primary" @click="$router.push('/goodslist/addgoods')"
-            >添加商品</el-button
-          >
+          <el-button type="primary" @click="addGoodsList">添加商品</el-button>
         </div>
       </div>
       <!-- 表单 -->
@@ -72,7 +70,7 @@
 </template>
 
 <script>
-import { getGoodsList, dleGoodsList } from '@/api/Goods/list'
+import { getGoodsLists, dleGoodsList } from '@/api/Goods/list'
 export default {
   created () {
     this.getGoodsList()
@@ -90,13 +88,13 @@ export default {
   },
   methods: {
     async getGoodsList () {
-      const res = await getGoodsList(this.goodsList)
+      const res = await getGoodsLists(this.goodsList)
       this.userList = res.data.data
       console.log(res)
     },
     // 搜索
     async onSearchClick () {
-      const res = await getGoodsList(this.goodsList)
+      const res = await getGoodsLists(this.goodsList)
       this.userList = res.data.data
       console.log(res)
     },
@@ -111,13 +109,31 @@ export default {
       this.getGoodsList()
       console.log(`当前页: ${val}`)
     },
-    // 删除商品
     onPutClick () { },
-    async delUserClick (id) {
-      const res = await dleGoodsList(id)
-      console.log(res)
-      console.log(id)
-      this.getGoodsList()
+    // 删除商品
+    delUserClick (id) {
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        const res = await dleGoodsList(id)
+        console.log(res)
+        console.log(id)
+        this.getGoodsList()
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    async addGoodsList () {
+      this.$router.push('/goodslist/addgoods')
     }
   },
   computed: {},

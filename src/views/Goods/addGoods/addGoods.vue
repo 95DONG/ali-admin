@@ -24,10 +24,10 @@
         <el-step title="完成"></el-step>
       </el-steps>
 
-      <el-tabs tab-position="left">
+      <el-tabs tab-position="left" @tab-click="tabClick">
         <el-tab-pane label="基本信息">
           <el-form :model="goodsInfo" :rules="rules">
-            <el-form-item label="商品名称" prop="username">
+            <el-form-item label="商品名称" prop="goods_name">
               <el-input
                 v-model="goodsInfo.goods_name"
                 autocomplete="off"
@@ -35,35 +35,42 @@
               ></el-input>
             </el-form-item>
             <el-form-item label="商品价格" prop="goods_price">
-              <el-input
+              <el-input-number
+                :min="0"
+                controls-position="right"
                 v-model="goodsInfo.goods_price"
-                autocomplete="off"
                 size="large"
-                value="0"
-              ></el-input>
+              ></el-input-number>
             </el-form-item>
             <el-form-item label="商品重量" prop="goods_weight">
-              <el-input
+              <el-input-number
                 v-model="goodsInfo.goods_weight"
-                autocomplete="off"
                 size="large"
-                value="0"
-              ></el-input>
+                :min="0"
+                controls-position="right"
+              ></el-input-number>
             </el-form-item>
             <el-form-item label="商品数量" prop="goods_number">
-              <el-input
+              <el-input-number
                 v-model="goodsInfo.goods_number"
-                autocomplete="off"
                 size="large"
-                value="0"
-              ></el-input>
+                :min="0"
+                controls-position="right"
+              ></el-input-number>
             </el-form-item>
             <el-form-item label="商品分类" prop="goods_cat">
-              <el-input
-                v-model="goodsInfo.goods_cat"
-                autocomplete="off"
-                size="large"
-              ></el-input>
+              <el-cascader
+                v-model="value"
+                :options="options"
+                clearable
+                ref="clearRef"
+                :props="{
+                  expandTrigger: 'hover',
+                  label: 'cat_name',
+                  value: 'cat_id',
+                }"
+                @change="handleChange"
+              ></el-cascader>
             </el-form-item>
           </el-form>
         </el-tab-pane>
@@ -113,7 +120,9 @@
               @onCreated="onCreated"
             />
           </div>
-          <el-button type="primary" style="margin-top:30px">添加商品</el-button>
+          <el-button type="primary" style="margin-top: 30px"
+            >添加商品</el-button
+          >
         </el-tab-pane>
       </el-tabs>
     </el-card>
@@ -122,21 +131,28 @@
 
 <script>
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
+import { getGoodsList } from '@/api/Goods/class'
 export default {
-  created () { },
+  async created () {
+    const res = await getGoodsList({ type: '', pagenum: '', pagesize: '' })
+    this.options = res.data.data
+    console.log(res)
+  },
   data () {
     return {
       active: 0,
+      value: '',
       goodsInfo: {
         goods_name: '',
         goods_cat: '',
-        goods_price: 0,
-        goods_number: 0,
-        goods_weight: 0,
+        goods_price: '',
+        goods_number: '',
+        goods_weight: '',
         goods_introduce: ''
       },
+      // 规则
       rules: {
-        username: [{ required: true, message: '用户名不能为空', trigger: 'blur' }, { min: 3, max: 8, message: '用户名长度3-8', trigger: 'blur' }
+        goods_name: [{ required: true, message: '用户名不能为空', trigger: 'blur' }, { min: 3, max: 8, message: '用户名长度3-8', trigger: 'blur' }
         ],
         password: [{ required: true, message: '密码不能为空', trigger: 'blur' }, { min: 3, max: 8, message: '密码长度3-8', trigger: 'blur' }
         ]
@@ -149,7 +165,8 @@ export default {
       html: '<p>hello</p>',
       toolbarConfig: {},
       editorConfig: { placeholder: '请输入内容...' },
-      mode: 'default' // or 'simple'
+      mode: 'default', // or 'simple'
+      options: []
     }
   },
   methods: {
@@ -162,6 +179,15 @@ export default {
     // 富文本编辑器
     onCreated (editor) {
       this.editor = Object.seal(editor) // 一定要用 Object.seal() ，否则会报错
+    },
+    tabClick (e) {
+      this.active = e.index * 1
+    },
+    handleChange (value) {
+      this.$refs.clearRef.$refs.panel.clearCheckedNodes()
+      console.log(this.$refs.clearRef)
+      console.log(value)
+      console.log(this.goodsInfo)
     }
   },
   mounted () {
@@ -197,5 +223,11 @@ export default {
 
 .el-steps {
   margin: 10px 0;
+}
+/deep/ .el-input-number {
+  width: 100%;
+}
+/deep/ .el-input-number .el-input__inner {
+  text-align: left;
 }
 </style>

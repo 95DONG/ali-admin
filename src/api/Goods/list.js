@@ -1,5 +1,5 @@
 import request from '@/utils/index'
-export const getGoodsList = (data) => {
+export const getGoodsLists = (data) => {
   return request({
     url: 'goods',
     params: data

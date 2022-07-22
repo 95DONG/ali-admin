@@ -21,18 +21,55 @@
         <el-cascader
           v-model="value"
           :options="options"
-          :props="{ expandTrigger: 'hover' }"
+          :props="{
+            expandTrigger: 'hover',
+            label: 'cat_name',
+            value: 'cat_id',
+          }"
           @change="handleChange"
         ></el-cascader>
       </div>
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane label="动态参数" name="first">
           <el-button size="small" type="primary">添加参数</el-button>
-          <el-table stripe :data="userList" border style="width: 100%">
+          <el-table
+            stripe
+            :data="manyCategoriesList"
+            border
+            style="width: 100%"
+          >
             <el-table-column prop="id" width="50" type="expand">
+              <template>
+                <el-tag
+                  :key="tag"
+                  v-for="tag in manyCategoriesList.attr_vals"
+                  closable
+                  :disable-transitions="false"
+                  @close="handleClose(tag)"
+                >
+                  {{ tag }}
+                </el-tag>
+                <el-input
+                  class="input-new-tag"
+                  v-if="inputVisible"
+                  v-model="inputValue"
+                  ref="saveTagInput"
+                  size="small"
+                  @keyup.enter.native="handleInputConfirm"
+                  @blur="handleInputConfirm"
+                >
+                </el-input>
+                <el-button
+                  v-else
+                  class="button-new-tag"
+                  size="small"
+                  @click="showInput"
+                  >+ New Tag</el-button
+                >
+              </template>
             </el-table-column>
             <el-table-column type="index" label="#"> </el-table-column>
-            <el-table-column prop="roleName" label="分类名称">
+            <el-table-column prop="attr_name" label="分类名称">
             </el-table-column>
             <el-table-column prop="roleName" label="操作">
               <template slot-scope="scope">
@@ -44,7 +81,7 @@
                   >编辑</el-button
                 >
                 <el-button
-                  type="primary"
+                  type="danger"
                   icon="el-icon-delete"
                   size="mini"
                   class="del"
@@ -64,187 +101,71 @@
 </template>
 
 <script>
+import { getGoodsList } from '@/api/Goods/class'
+import { getCategoriesList } from '@/api/Goods/parameter'
 export default {
-  created () { },
+  async created () {
+    const res = await getGoodsList({ type: '', pagenum: '', pagesize: '' })
+    // console.log(res)
+    this.options = res.data.data
+  },
   data () {
     return {
       value: [],
-      options: [{
-        value: 'zhinan',
-        label: '指南',
-        children: [{
-          value: 'shejiyuanze',
-          label: '设计原则',
-          children: [{
-            value: 'yizhi',
-            label: '一致'
-          }, {
-            value: 'fankui',
-            label: '反馈'
-          }, {
-            value: 'xiaolv',
-            label: '效率'
-          }, {
-            value: 'kekong',
-            label: '可控'
-          }]
-        }, {
-          value: 'daohang',
-          label: '导航',
-          children: [{
-            value: 'cexiangdaohang',
-            label: '侧向导航'
-          }, {
-            value: 'dingbudaohang',
-            label: '顶部导航'
-          }]
-        }]
-      }, {
-        value: 'zujian',
-        label: '组件',
-        children: [{
-          value: 'basic',
-          label: 'Basic',
-          children: [{
-            value: 'layout',
-            label: 'Layout 布局'
-          }, {
-            value: 'color',
-            label: 'Color 色彩'
-          }, {
-            value: 'typography',
-            label: 'Typography 字体'
-          }, {
-            value: 'icon',
-            label: 'Icon 图标'
-          }, {
-            value: 'button',
-            label: 'Button 按钮'
-          }]
-        }, {
-          value: 'form',
-          label: 'Form',
-          children: [{
-            value: 'radio',
-            label: 'Radio 单选框'
-          }, {
-            value: 'checkbox',
-            label: 'Checkbox 多选框'
-          }, {
-            value: 'input',
-            label: 'Input 输入框'
-          }, {
-            value: 'input-number',
-            label: 'InputNumber 计数器'
-          }, {
-            value: 'select',
-            label: 'Select 选择器'
-          }, {
-            value: 'cascader',
-            label: 'Cascader 级联选择器'
-          }, {
-            value: 'switch',
-            label: 'Switch 开关'
-          }, {
-            value: 'slider',
-            label: 'Slider 滑块'
-          }, {
-            value: 'time-picker',
-            label: 'TimePicker 时间选择器'
-          }, {
-            value: 'date-picker',
-            label: 'DatePicker 日期选择器'
-          }, {
-            value: 'datetime-picker',
-            label: 'DateTimePicker 日期时间选择器'
-          }, {
-            value: 'upload',
-            label: 'Upload 上传'
-          }, {
-            value: 'rate',
-            label: 'Rate 评分'
-          }, {
-            value: 'form',
-            label: 'Form 表单'
-          }]
-        }, {
-          value: 'data',
-          label: 'Data',
-          children: [{
-            value: 'table',
-            label: 'Table 表格'
-          }, {
-            value: 'tag',
-            label: 'Tag 标签'
-          }, {
-            value: 'progress',
-            label: 'Progress 进度条'
-          }, {
-            value: 'tree',
-            label: 'Tree 树形控件'
-          }, {
-            value: 'pagination',
-            label: 'Pagination 分页'
-          }, {
-            value: 'badge',
-            label: 'Badge 标记'
-          }]
-        }, {
-          value: 'notice',
-          label: 'Notice',
-          children: [{
-            value: 'alert',
-            label: 'Alert 警告'
-          }, {
-            value: 'loading',
-            label: 'Loading 加载'
-          }, {
-            value: 'message',
-            label: 'Message 消息提示'
-          }, {
-            value: 'message-box',
-            label: 'MessageBox 弹框'
-          }, {
-            value: 'notification',
-            label: 'Notification 通知'
-          }]
-        }, {
-          value: 'navigation',
-          label: 'Navigation'
-        }, {
-          value: 'others',
-          label: 'Others'
-        }]
-      }, {
-        value: 'ziyuan',
-        label: '资源',
-        children: [{
-          value: 'axure',
-          label: 'Axure Components'
-        }, {
-          value: 'sketch',
-          label: 'Sketch Templates'
-        }, {
-          value: 'jiaohu',
-          label: '组件交互文档'
-        }]
-      }],
+      options: [],
       activeName: 'first',
-      userList: []
-
+      manyCategoriesList: [],
+      dynamicTags: ['标签一', '标签二', '标签三'],
+      inputVisible: false,
+      inputValue: '',
+      tag: []
     }
   },
   methods: {
-    handleChange (value) {
+    async handleChange (value) {
       console.log(value)
+      if (value.length !== 3) {
+        this.$message.error('请选择三级分类')
+        this.value = []
+      } else {
+        const res = await getCategoriesList(value[2], 'many')
+        this.manyCategoriesList = res.data.data
+        console.log(res)
+        if (this.manyCategoriesList.attr_vals !== '') {
+          this.tag = this.manyCategoriesList.attr_vals.split(' ')
+        }
+      }
     },
     handleClick (tab, event) {
       console.log(tab, event)
     },
     onPutClick () { },
-    delUserClick () { }
+    delUserClick () { },
+    handleClose (tag) {
+      this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1)
+    },
+
+    showInput () {
+      this.inputVisible = true
+      this.$nextTick(_ => {
+        this.$refs.saveTagInput.$refs.input.focus()
+      })
+    },
+
+    handleInputConfirm () {
+      const inputValue = this.inputValue
+      if (inputValue) {
+        this.dynamicTags.push(inputValue)
+      }
+      this.inputVisible = false
+      this.inputValue = ''
+    }
   },
-  computed: {},
+  computed: {
+    // tag () {
+    //   return console.log(); (this.manyCategoriesList.attr_vals.split())
+    // }
+  },
   watch: {},
   filters: {},
   components: {}
