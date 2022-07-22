@@ -39,13 +39,13 @@
             style="width: 100%"
           >
             <el-table-column prop="id" width="50" type="expand">
-              <template>
+              <template v-slot="scope">
                 <el-tag
-                  :key="tag"
-                  v-for="tag in manyCategoriesList.attr_vals"
+                  :key="index"
+                  v-for="(tag, index) in scope.row.attr_vals"
                   closable
                   :disable-transitions="false"
-                  @close="handleClose(tag)"
+                  @close="handleClose(scope.row, tag)"
                 >
                   {{ tag }}
                 </el-tag>
@@ -55,8 +55,8 @@
                   v-model="inputValue"
                   ref="saveTagInput"
                   size="small"
-                  @keyup.enter.native="handleInputConfirm"
-                  @blur="handleInputConfirm"
+                  @keyup.enter.native="handleInputConfirm(scope.row)"
+                  @blur="handleInputConfirm(scope.row)"
                 >
                 </el-input>
                 <el-button
@@ -72,7 +72,7 @@
             <el-table-column prop="attr_name" label="分类名称">
             </el-table-column>
             <el-table-column prop="roleName" label="操作">
-              <template slot-scope="scope">
+              <template v-slot="scope">
                 <el-button
                   @click="onPutClick(scope.row)"
                   type="primary"
@@ -85,7 +85,7 @@
                   icon="el-icon-delete"
                   size="mini"
                   class="del"
-                  @click="delUserClick(scope.row.id)"
+                  @click="delUserClick(scope.row)"
                   >删除</el-button
                 ></template
               >
@@ -102,7 +102,7 @@
 
 <script>
 import { getGoodsList } from '@/api/Goods/class'
-import { getCategoriesList } from '@/api/Goods/parameter'
+import { getCategoriesList, postCategoriesTag, delCategoriesTag } from '@/api/Goods/parameter'
 export default {
   async created () {
     const res = await getGoodsList({ type: '', pagenum: '', pagesize: '' })
@@ -118,7 +118,8 @@ export default {
       dynamicTags: ['标签一', '标签二', '标签三'],
       inputVisible: false,
       inputValue: '',
-      tag: []
+      data: {
+      }
     }
   },
   methods: {
@@ -130,19 +131,42 @@ export default {
       } else {
         const res = await getCategoriesList(value[2], 'many')
         this.manyCategoriesList = res.data.data
-        console.log(res)
-        if (this.manyCategoriesList.attr_vals !== '') {
-          this.tag = this.manyCategoriesList.attr_vals.split(' ')
-        }
+        // console.log(res.data.data)
+        this.manyCategoriesList.forEach(item => {
+          if (item.attr_vals.length > 1) {
+            item.attr_vals = item.attr_vals.split(' ')
+            // console.log(item.attr_vals)
+          } else {
+            item.attr_vals = []
+          }
+        })
+        // console.log(this.manyCategoriesList)
       }
     },
     handleClick (tab, event) {
       console.log(tab, event)
     },
+
+    // 删除按钮
     onPutClick () { },
-    delUserClick () { },
-    handleClose (tag) {
-      this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1)
+    async delUserClick (row) {
+      const res = await delCategoriesTag(row.cat_id, row.attr_id)
+      console.log(res)
+    },
+    // 删除标签
+    async handleClose (row, tag) {
+      console.log('row', row, tag)
+      row.attr_vals.splice(row.attr_vals.indexOf(tag), 1)
+      this.data = {
+        attr_name: row.attr_name,
+        attr_sel: 'many',
+        attr_vals: row.attr_vals.join(' '),
+        attrId: row.attr_id,
+        id: row.cat_id
+      }
+      const res = await postCategoriesTag(this.data)
+      console.log(res)
+      this.data = {}
     },
 
     showInput () {
@@ -152,19 +176,27 @@ export default {
       })
     },
 
-    handleInputConfirm () {
+    async handleInputConfirm (str) {
       const inputValue = this.inputValue
+      // console.log(str)
       if (inputValue) {
-        this.dynamicTags.push(inputValue)
+        str.attr_vals.push(inputValue)
       }
+      this.data = {
+        attr_name: str.attr_name,
+        attr_sel: 'many',
+        attr_vals: str.attr_vals.join(' '),
+        attrId: str.attr_id,
+        id: str.cat_id
+      }
+      const res = await postCategoriesTag(this.data)
+      console.log(res)
+      this.data = {}
       this.inputVisible = false
       this.inputValue = ''
     }
   },
   computed: {
-    // tag () {
-    //   return console.log(); (this.manyCategoriesList.attr_vals.split())
-    // }
   },
   watch: {},
   filters: {},
@@ -175,5 +207,26 @@ export default {
 <style scoped lang='less'>
 .box-card {
   margin-top: 20px;
+}
+/deep/ .el-table__expanded-cell {
+  padding-left: 50px;
+  .el-tag {
+    margin-right: 15px;
+  }
+}
+.el-tag + .el-tag {
+  margin-left: 10px;
+}
+.button-new-tag {
+  margin-left: 10px;
+  height: 32px;
+  line-height: 30px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.input-new-tag {
+  width: 90px;
+  margin-left: 10px;
+  vertical-align: bottom;
 }
 </style>

@@ -35,28 +35,31 @@
               ></el-input>
             </el-form-item>
             <el-form-item label="商品价格" prop="goods_price">
-              <el-input-number
+              <el-input
                 :min="0"
+                type="number"
                 controls-position="right"
                 v-model="goodsInfo.goods_price"
                 size="large"
-              ></el-input-number>
+              ></el-input>
             </el-form-item>
             <el-form-item label="商品重量" prop="goods_weight">
-              <el-input-number
+              <el-input
                 v-model="goodsInfo.goods_weight"
                 size="large"
                 :min="0"
+                type="number"
                 controls-position="right"
-              ></el-input-number>
+              ></el-input>
             </el-form-item>
             <el-form-item label="商品数量" prop="goods_number">
-              <el-input-number
+              <el-input
                 v-model="goodsInfo.goods_number"
                 size="large"
+                type="number"
                 :min="0"
                 controls-position="right"
-              ></el-input-number>
+              ></el-input>
             </el-form-item>
             <el-form-item label="商品分类" prop="goods_cat">
               <el-cascader
@@ -145,16 +148,20 @@ export default {
       goodsInfo: {
         goods_name: '',
         goods_cat: '',
-        goods_price: '',
-        goods_number: '',
-        goods_weight: '',
+        goods_price: 0,
+        goods_number: 0,
+        goods_weight: 0,
         goods_introduce: ''
       },
       // 规则
       rules: {
         goods_name: [{ required: true, message: '用户名不能为空', trigger: 'blur' }, { min: 3, max: 8, message: '用户名长度3-8', trigger: 'blur' }
         ],
-        password: [{ required: true, message: '密码不能为空', trigger: 'blur' }, { min: 3, max: 8, message: '密码长度3-8', trigger: 'blur' }
+        goods_price: [{ required: true, message: '商品价格不能为空', trigger: 'blur' }, { min: 1, message: '请输入商品价格', trigger: 'blur' }
+        ],
+        goods_number: [{ required: true, message: '商品价格不能为空', trigger: 'blur' }, { min: 1, message: '请输入商品价格', trigger: 'blur' }
+        ],
+        goods_weight: [{ required: true, message: '商品价格不能为空', trigger: 'blur' }, { min: 1, message: '请输入商品价格', trigger: 'blur' }
         ]
       },
       checked1: true,
@@ -223,11 +230,5 @@ export default {
 
 .el-steps {
   margin: 10px 0;
-}
-/deep/ .el-input-number {
-  width: 100%;
-}
-/deep/ .el-input-number .el-input__inner {
-  text-align: left;
 }
 </style>
