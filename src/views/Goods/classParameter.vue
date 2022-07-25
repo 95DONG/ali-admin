@@ -35,14 +35,16 @@
           <el-table
             stripe
             :data="manyCategoriesList"
+            expand-row-keys
             border
-            style="width: 100%"
+            style="width: 100%; margin-top: 15px"
           >
             <el-table-column prop="id" width="50" type="expand">
               <template v-slot="scope">
                 <el-tag
                   :key="index"
                   v-for="(tag, index) in scope.row.attr_vals"
+                  :row-keys="index"
                   closable
                   :disable-transitions="false"
                   @close="handleClose(scope.row, tag)"
@@ -104,6 +106,7 @@
 import { getGoodsList } from '@/api/Goods/class'
 import { getCategoriesList, postCategoriesTag, delCategoriesTag } from '@/api/Goods/parameter'
 export default {
+  name: 'classParameter',
   async created () {
     const res = await getGoodsList({ type: '', pagenum: '', pagesize: '' })
     // console.log(res)

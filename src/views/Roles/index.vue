@@ -45,7 +45,7 @@
                     <el-tag
                       closable
                       :disable-transitions="false"
-                      type="info"
+                      type="success"
                       :span="18"
                       v-for="(item2, index2) in item1.children"
                       :key="index2"
@@ -380,5 +380,12 @@ export default {
 }
 /deep/ .el-form-item {
   padding: 10px 0;
+}
+.el-col{
+margin: 10px;
+.el-tag{
+margin-right: 10px;
+margin-bottom: 10px;
+}
 }
 </style>
