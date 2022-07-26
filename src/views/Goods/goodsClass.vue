@@ -48,67 +48,6 @@
           >
         </template>
       </zk-table>
-      <!-- 表单 -->
-      <!-- <el-table
-        stripe
-        :data="userList"
-        border
-        style="width: 100%"
-        row-key="cat_id"
-      >
-        <template #icon>
-          <i class="el-icon-time"></i>
-        </template>
-        <el-table-column type="index" label="#"> </el-table-column>
-        <el-table-column prop="cat_name" label="分类名称"> </el-table-column>
-        <el-table-column prop="mobile" label="是否有效">
-          <template>
-            <el-radio v-model="radio"></el-radio>
-          </template>
-        </el-table-column>
-        <el-table-column prop="role_name" label="排序">
-          <template v-slot="scope">
-            <el-button
-              plain
-              :type="
-                scope.row.cat_level === 0
-                  ? 'primary'
-                  : scope.row.cat_level === 1
-                  ? 'success'
-                  : 'warning'
-              "
-              size="small"
-              >{{
-                scope.row.cat_level === 0
-                  ? "一级"
-                  : scope.row.cat_level === 1
-                  ? "二级"
-                  : "三级"
-              }}</el-button
-            >
-          </template>
-        </el-table-column>
-        <el-table-column prop="zip" label="操作" width="230">
-          <template slot-scope="scope">
-            <el-button
-              @click="onPutClick(scope.row)"
-              type="primary"
-              size="small"
-              icon="el-icon-edit"
-              >编辑</el-button
-            >
-            <el-button
-              type="primary"
-              icon="el-icon-delete"
-              size="small"
-              class="del"
-              @click="delUserClick(scope.row.id)"
-              >删除</el-button
-            >
-          </template>
-        </el-table-column>
-      </el-table> -->
-      <!-- 分页 -->
       <div class="block">
         <el-pagination
           @size-change="handleSizeChange"

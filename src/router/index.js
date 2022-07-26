@@ -17,7 +17,9 @@ const routes = [
         { path: '/goodslist', component: () => import('@/views/Goods/goodsLists.vue') },
         { path: '/goodslist/addgoods', component: () => import('@/views/Goods/addGoods/addGoods.vue') },
         { path: '/goodsclass', component: () => import('@/views/Goods/goodsClass') },
-        { path: '/classparameter', component: () => import('@/views/Goods/classParameter.vue') }
+        { path: '/classparameter', component: () => import('@/views/Goods/classParameter.vue') },
+        { path: '/orderlist', component: () => import('@/views/Order/orderList.vue') },
+        { path: '/reports', component: () => import('@/views/Reports/reports.vue') }
       ]
   }
 ]
